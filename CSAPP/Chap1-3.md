@@ -172,3 +172,88 @@ $$
 
 ---
 
+## 第三章 程序的机器级表示
+
+| 后缀 | 类型     | 数据大小        |
+| ---- | -------- | --------------- |
+| B    | BYTE     | 1byte           |
+| W    | WORD     | 2bytes (16bits) |
+| L    | LONG     | 4bytes          |
+| Q    | QUADWORD | 8bytes          |
+
+---
+
+### 访问信息
+
+#### 寻址
+
+- 操作数（operand）：
+
+  - 立即数（immediate）：`$0x1F`, `$-577`
+
+  - 寄存器（register）：`%rax`
+    - x86-64：16个通用寄存器
+
+  - 存储器（memory）：`M[Addr]`，可以是`Imm`, `(E_a)`
+
+- 寻址模式
+  - `disp`通常是`Imm`
+
+```scss
+disp(base, index, scale)
+```
+
+```csharp
+Effective Address = disp + base + index * scale
+```
+
+---
+
+#### MOV指令
+
+- 零扩展&符号扩展：放入更大寄存器时
+  - 零扩展：unsigned（无符号数），用0扩充高位
+    - 0000 1010 -> 0000 0000 0000 1010
+  - 符号扩展：signed，最高位（符号位）的值复制到所有新扩展的高位
+    - 1000 1010 -> 1111 1111 1111 1000 1010
+
+- mov
+
+```asm
+mov src, dst
+```
+
+`mov $imm, %rax` 支持 64 位立即数， `mov $imm, (%rax)` 只能32 位立即数（自动零扩展）
+
+- movs：符号扩展
+  - `movswq` : 符号扩展，W（双字，16位）到Q（64位）
+
+```
+movs[src_type][dst_type] src, dst
+```
+
+- movz：0扩展
+
+- movabsq, movsd*
+
+---
+
+#### 简单的栈s
+
+- `%rsp`：栈指针，指向当前栈顶
+- `%rbp`：栈帧基址（base pointer）访问局部变量
+
+```asm
+pushq %rbp      # 保存旧栈帧
+movq %rsp, %rbp # 建立新栈帧
+subl $16, %rsp  # 为局部变量开辟16字节空间
+```
+
+---
+
+### 算术与逻辑操作
+
+加载有效地址，一元操作，二元操作，移位
+
+#### leal指令
+

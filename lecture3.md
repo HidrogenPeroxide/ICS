@@ -71,4 +71,4 @@ swap:
 leaq Src, Dest
 ```
 
-- Src是地址计算表达式，副值给test
+- Src是地址计算表达式，赋值给test

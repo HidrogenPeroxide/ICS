@@ -1,5 +1,6 @@
-long plus(long x, long y);
-void sumstore(long x, long y, long *dest){
-    long t = plus(x, y);
-    *dest = t;
+int accum = 0;
+int sum(int x, int y){
+    int t = x + y;
+    accum += t;
+    return t;
 }
